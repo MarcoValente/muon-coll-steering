@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+    test:
+        image: infnpd/mucoll-ilc-framework:1.0-centos8
+        command: /bin/bash
+    simulation:
+        image: infnpd/mucoll-ilc-framework:1.0-centos8
+        volumes:
+            - $PWD/inputs/SoftCheck:/mnt
+            - $PWD/outputs:/outputs
+        command: /bin/bash -c "source /opt/ilcsoft/v02-01-pre/init_ilcsoft.sh && /opt/ilcsoft/v02-01-pre/DD4hep/v01-11/bin/ddsim --steeringFile /mnt/clic_steer.py > /outputs/sim.out"
+    reco:
+        image: infnpd/mucoll-ilc-framework:1.0-centos8
+        volumes:
+            - $PWD/inputs/SoftCheck:/mnt
+            - $PWD/outputs:/outputs
+        command: /bin/bash
+        # command: /bin/bash -c "source /opt/ilcsoft/v02-01-pre/init_ilcsoft.sh && /opt/ilcsoft/v02-01-pre/DD4hep/v01-11/bin/ddsim --steeringFile /mnt/clic_steer.py > /outputs/sim.out"
