@@ -1,19 +1,24 @@
 version: '3'
 
 services:
-    test:
+    interactive:
         image: infnpd/mucoll-ilc-framework:1.0-centos8
         command: /bin/bash
     simulation:
         image: infnpd/mucoll-ilc-framework:1.0-centos8
         volumes:
             - $PWD/inputs/SoftCheck:/mnt
-            - $PWD/outputs:/outputs
-        command: /bin/bash -c "source /opt/ilcsoft/v02-01-pre/init_ilcsoft.sh && /opt/ilcsoft/v02-01-pre/DD4hep/v01-11/bin/ddsim --steeringFile /mnt/clic_steer.py > /outputs/sim.out"
+        command: /bin/bash -c "source /opt/ilcsoft/v02-01-pre/init_ilcsoft.sh && cd /mnt && ddsim --steeringFile clic_steer.py > sim.out"
     reco:
         image: infnpd/mucoll-ilc-framework:1.0-centos8
         volumes:
             - $PWD/inputs/SoftCheck:/mnt
-            - $PWD/outputs:/outputs
-        command: /bin/bash
-        # command: /bin/bash -c "source /opt/ilcsoft/v02-01-pre/init_ilcsoft.sh && /opt/ilcsoft/v02-01-pre/DD4hep/v01-11/bin/ddsim --steeringFile /mnt/clic_steer.py > /outputs/sim.out"
+        command: /bin/bash -c "source /opt/ilcsoft/v02-01-pre/init_ilcsoft.sh && cd /mnt && Marlin RecoConf.xml > reco.out"
+    root:
+        environment:
+            - DISPLAY=host.docker.internal:0
+        image: infnpd/mucoll-ilc-framework:1.0-centos8
+        privileged: true
+        volumes:
+            - $PWD/inputs/SoftCheck:/mnt
+        command: root
