@@ -12,6 +12,7 @@ x-volumes:
     &default-volumes
     volumes:
         - $PWD/inputs/SoftCheck:$MAINDIR
+        - $PWD/inputs/samples:$DATADIR/samples
         - $PWD/files/xml:$MAINDIR/xml
 
 x-environment:
