@@ -1,6 +1,6 @@
-# HH Muon collider
+# Muon collider steering
 
-This repository stores a set of scripts for the studies of HH production and detection at muon colliders. The code is fully based on the docker images provided by INFN `infnpd/mucoll-ilc-framework:1.0-centos8`.
+This repository stores a set of helper scripts for launching simulation and reconstruction of the MuonColliderSoft. The code is fully based on the docker images provided by INFN `infnpd/mucoll-ilc-framework:1.0-centos8` and the steering of the docker image is done with the `docker-compose` multi-container manager (generally provided with docker installations).
 
 ## Download the test input files
 After cloning this project, test input files can be downloaded by executing
@@ -24,10 +24,15 @@ docker-compose run reco
 ```
 
 ## Run the Beam Induced Background (BIB)
-Rerun the reconstruction step following the instructions above after uncommenting
+BIB files can be downloaded by typing
+```
+source scripts/download-bib-files.sh
+```
+Since files are really large this might take a while. In order to rerun the reconstruction step with the BIB included, you can run with the BIB xml file by uncommenting
 ```
 #RECO_CONFIG_XML=xml/reco_steer_BIB_notrack.xml
 ```
+in the `.env` file. Right now, a crash might happen due to memory usage issue (you will need to provide docker with more memory in order to run this).
 
 ## Useful links
 -   [Open question and ideas slides (July 2020)](https://indico.fnal.gov/event/43963/contributions/190487/attachments/131664/161302/EF-Workshop-MuonColl.pdf)
