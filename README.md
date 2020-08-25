@@ -24,7 +24,7 @@ docker-compose run reco
 ```
 
 ## Run the Beam Induced Background (BIB)
-BIB files can be downloaded by typing
+BIB files can be downloaded and untared by typing
 ```
 source scripts/download-bib-files.sh
 ```
