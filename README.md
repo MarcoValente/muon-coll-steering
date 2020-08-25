@@ -1,6 +1,6 @@
 # Muon collider steering
 
-This repository stores a set of helper scripts for launching simulation and reconstruction of the MuonColliderSoft. The code is fully based on the docker images provided by INFN `infnpd/mucoll-ilc-framework:1.0-centos8` and the steering of the docker image is done with the `docker-compose` multi-container manager (generally provided with docker installations).
+This repository provides a set of helper scripts for launching simulation and reconstruction of the MuonColliderSoft framework. The code is based on the docker images provided by INFN `infnpd/mucoll-ilc-framework:1.0-centos8` and the steering of the docker image is done with the `docker-compose` multi-container manager generally provided with the standard docker installation.
 
 ## Download the test input files
 After cloning this project, test input files can be downloaded by executing
