@@ -28,11 +28,15 @@ BIB files can be downloaded and untared by typing
 ```
 source scripts/download-bib-files.sh
 ```
-Since files are really large this might take a while. In order to rerun the reconstruction step with the BIB included, you can run with the BIB xml file by uncommenting
+Since files are really large this might take a while. In order to rerun the reconstruction step with the BIB included, you can run 
+```
+docker-compose run reco
+```
+after uncommenting
 ```
 #RECO_CONFIG_XML=xml/reco_steer_BIB_notrack.xml
 ```
-in the `.env` file. Right now, a crash might happen due to memory usage issue (you will need to provide docker with more memory in order to run this).
+in the `.env` file. Right now, a crash might happen due to memory usage issue. In order to avoid this you will need to provide docker with more memory in order to run this.
 
 ## Useful links
 -   [Open question and ideas slides (July 2020)](https://indico.fnal.gov/event/43963/contributions/190487/attachments/131664/161302/EF-Workshop-MuonColl.pdf)
