@@ -13,6 +13,7 @@ x-volumes:
     volumes:
         - $PWD/inputs/SoftCheck:$MAINDIR
         - $PWD/inputs/samples:$DATADIR/samples
+        - $PWD/inputs/config:$DATADIR/config
         - $PWD/files/xml:$MAINDIR/xml
 
 x-environment:
@@ -34,12 +35,12 @@ services:
         << : *default-image
         << : *default-volumes
         << : *default-environment
-        command: /bin/bash -c "source $SOURCE_ILC_FILE && cd $MAINDIR && ddsim --steeringFile $SIM_STEERING_FILE > $SIM_OUTPUT"
+        command: /bin/bash -c "source $SOURCE_ILC_FILE && cd $MAINDIR && ddsim --steeringFile $SIM_STEERING_FILE | tee $SIM_OUTPUT"
     reco:
         << : *default-image
         << : *default-volumes
         << : *default-environment
-        command: /bin/bash -c "source $SOURCE_ILC_FILE && cd $MAINDIR && Marlin $RECO_CONFIG_XML > $RECO_OUTPUT"
+        command: /bin/bash -c "source $SOURCE_ILC_FILE && cd $MAINDIR && Marlin $RECO_CONFIG_XML | tee $RECO_OUTPUT"
     root:
         << : *default-image
         << : *default-volumes
