@@ -20,6 +20,7 @@ x-environment:
     &default-environment
     environment:
         - DISPLAY=host.docker.internal:0
+        - USER=root
 
 ##################################################
 # """Services"""
@@ -47,3 +48,8 @@ services:
         << : *default-environment
         privileged: true
         command: root
+    display:
+        << : *default-image
+        << : *default-volumes
+        << : *default-environment
+        command: /bin/bash -c "source $SOURCE_ILC_FILE && cd $MAINDIR && ced2go -d $CLIC_GEO_FILE $OUT_SLCIO_FILE | tee $ED_OUTPUT"
