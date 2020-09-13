@@ -21,7 +21,7 @@
     <processor name="InitDD4hep_mod4"/>
 
     <!-- ==========  LCTuple  ========== -->
-    <processor name="LCTupleDefault" />
+    <!-- <processor name="LCTupleDefault" /> -->
 
     <!-- ==========  Overlay  ========== -->
     <if condition="Config.OverlayBIB">
@@ -42,14 +42,16 @@
     <group name="PfoSelector" />
 
     <!-- ==========  Vertexing and jet clustering  ========== -->
-    <if condition="Config.OverlayFalse">
+<!--     <if condition="Config.OverlayFalse">
       <processor name="RenameCollection"/>
     </if>
     <if condition="Config.OverlayNotFalse">
       <processor name="MyFastJetProcessor"/>
-    </if>
+    </if> -->
     <!-- ==========  Output  ========== -->
-    <processor name="Output_REC"/>
+    <processor name="LCFastJetProcessor" />
+    <processor name="LCTupleMax" />
+    <!-- <processor name="Output_REC"/> -->
     <!-- <processor name="Output_DST"/> -->
 
   </execute>
@@ -88,7 +90,7 @@
     <!-- compression of output file 0: false >0: true (default) -->
     <parameter name="Compress" type="int" value="0"/>
     <!-- filename without extension-->
-    <parameter name="FileName" type="string" value="histograms_notrack_BIB_285"/>
+    <parameter name="FileName" type="string" value="histograms_notrack_BIB_1520"/>
     <!-- type of output file xml (default) or root ( only OpenScientist)-->
     <parameter name="FileType" type="string" value="root "/>
   </processor>
@@ -105,7 +107,7 @@
       mumuHbb_sim.slcio
     </parameter>
     <!-- Limit the number of processed records (run+evt): -->
-    <parameter name="MaxRecordNumber" value="10" />
+    <parameter name="MaxRecordNumber" value="100" />
     <parameter name="SkipNEvents" value="1" />
     <parameter name="SupressCheck" value="false" />  
     <parameter name="Verbosity" options="DEBUG0-9,MESSAGE0-9,WARNING0-9,ERROR0-9,SILENT">WARNING </parameter>
@@ -122,7 +124,8 @@
   <processor name="Output_REC" type="LCIOOutputProcessor">
     <!--   standard output: full reconstruction keep all collections -->
     <parameter name="LCIOOutputFile" type="string"> Output_REC.slcio </parameter>
-    <parameter name="FullSubsetCollections" type="StringVec"> EfficientMCParticles InefficientMCParticles </parameter>
+    <!--parameter name="FullSubsetCollections" type="StringVec"> EfficientMCParticles InefficientMCParticles </parameter> -->
+    <parameter name="FullSubsetCollections" type="StringVec"> </parameter>
     <parameter name="LCIOWriteMode" type="string" value="WRITE_NEW"/>
     <!--<parameter name="SplitFileSizekB" type="int">996147 </parameter> -->
     <!-- above comment out...?-->
@@ -166,9 +169,9 @@
       SiTracks_Refitted
       RecoMCTruthLink
       SiTracksMCTruthLink
+      PandoraClusters
     </parameter>
     <parameter name="KeepCollectionNames" type="StringVec">
-      PandoraClusters
       MergedRecoParticles
       SelectedPandoraPFOs
     </parameter>
@@ -198,6 +201,15 @@
     <!--parameter name="Verbosity" type="string">DEBUG </parameter-->
   </processor>
 
+<!-- fastjet! -->
+
+  <processor name="LCFastJetProcessor" type="FastJetProcessor">
+    <parameter name="algorithm" type="StringVec">kt_algorithm 0.7</parameter>
+    <parameter name="clusteringMode" type="StringVec"> Inclusive 5</parameter>
+    <parameter name="jetOut" type="string" lcioOutType="ReconstructedParticle">JetOut </parameter>
+    <parameter name="recParticleIn" type="string" lcioInType="ReconstructedParticle"> PandoraPFOs </parameter>
+    <parameter name="recombinationScheme" type="string">E_scheme </parameter>
+  </processor>
 
   <!-- ======================================================================================================== -->
   <!-- ======================================================================================================== -->
@@ -205,58 +217,46 @@
   <!-- ======================================================================================================== -->
   <!-- ======================================================================================================== -->
 
-  <processor name="LCTupleDefault" type="LCTuple">
+  <processor name="LCTupleMax" type="LCTuple">
     <!--LCTuple creates a ROOT TTRee with a column wise ntuple from LCIO collections ....-->
-    <parameter name="FullSubsetCollections" type="StringVec"> EfficientMCParticles InefficientMCParticles </parameter>
     <!--Name of the CalorimeterHit collection-->
     <parameter name="CalorimeterHitCollection" type="string" lcioInType="CalorimeterHit"> </parameter>
     <!--Name of the Cluster collection-->
-    <parameter name="ClusterCollection" type="string" lcioInType="Cluster"> </parameter>
+    <parameter name="ClusterCollection" type="string" lcioInType="Cluster"> PandoraClusters </parameter>
     <!--Name of the IsoLep collection-->
     <parameter name="IsoLepCollection" type="string" lcioInType="ReconstructedParticle"> </parameter>
     <!--Name of the Jet collection-->
-    <parameter name="JetCollection" type="string" lcioInType="ReconstructedParticle"> JetsAfterGamGamRemoval </parameter>
+    <parameter name="JetCollection" type="string" lcioInType="ReconstructedParticle"> JetOut </parameter>
     <!--Switch to write out extra parameters calculated using information from Jet Finder-->
     <parameter name="JetCollectionExtraParameters" type="bool">true </parameter>
     <!--Switch to write out jet parameters coming from LCFIPlus tagging processor-->
     <parameter name="JetCollectionTaggingParameters" type="bool">false </parameter>
     <!--Names of LCRelation collections - need parallel prefix names in RelPrefixes-->
-    <parameter name="LCRelationCollections" type="StringVec" lcioInType="LCRelation">
-      RecoMCTruthLink 
-      Reco2ClustersRelation
-      SiTracksMCTruthLink
-      Reco2RecoRelation
-    </parameter>
-    <!-- Names of prefixes for variables from LCRelation collections - needs to be parallel to LCRelationCollections (one prefix per collection)-->
-    <parameter name="LCRelationPrefixes" type="StringVec">  
-      r2m  
-      r2c  
-      r2t  
-      r2r  
-    </parameter>
+    <parameter name="LCRelationCollections" type="StringVec" lcioInType="LCRelation">  </parameter>
+    <!-- Names of prefixes for variables from LCRelation collections - needs to be parallel to LCRelationCollections (one prefix per collection) -->
+    <parameter name="LCRelationPrefixes" type="StringVec"> </parameter>
     <!--Names of LCRelation collections of PFO-->
     <parameter name="LCRelationwithPFOCollections" type="string" lcioInType="LCRelation"> </parameter>
     <!--Name of the MCParticle collection-->
-    <parameter name="MCParticleCollection" type="string" lcioInType="MCParticle"> MCParticle </parameter>
-    <parameter name="MCParticleNotReco" type="string" lcioOutType="MCParticle"> </parameter>
-    <!--Name of the MCParticle collection where the overlay is removed-->
-    <!--parameter name="MCParticleRemoveOverlayCollection" type="string" lcioInType="MCParticle"> </parameter-->
+    <!--<parameter name="MCParticleCollection" type="string" lcioInType="MCParticle"> MCParticle </parameter> -->
+    <!--Name of the MCParticle collection where the overlay is removed-->111111
+    <!--<parameter name="MCParticleRemoveOverlayCollection" type="string" lcioInType="MCParticle"> </parameter> -->
     <!--Name of the PFO collection with Relation-->
-    <!--parameter name="PFOwithRelationCollection" type="string" lcioInType="ReconstructedParticle"> </parameter-->
+    <parameter name="PFOwithRelationCollection" type="string" lcioInType="ReconstructedParticle"> </parameter>
     <!--Name of the ReconstructedParticle collection-->
-    <parameter name="RecoParticleCollection" type="string" lcioInType="ReconstructedParticle"> MergedRecoParticles </parameter> 
+    <parameter name="RecoParticleCollection" type="string" lcioInType="ReconstructedParticle">ReconstructedParticle </parameter>
     <!--Name of the SimCalorimeterHit collection-->
     <parameter name="SimCalorimeterHitCollection" type="string" lcioInType="SimCalorimeterHit"> </parameter>
     <!--Name of the SimTrackerHit collection-->
     <parameter name="SimTrackerHitCollection" type="string" lcioInType="SimTrackerHit"> </parameter>
     <!--Name of the Track collection-->
-    <parameter name="TrackCollection" type="string" lcioInType="Track">SiTracks_Refitted </parameter>
+    <parameter name="TrackCollection" type="string" lcioInType="Track"> </parameter>
     <!--Name of the TrackerHit collection-->
-    <parameter name="TrackerHitCollection" type="string" lcioInType="TrackerHit"> </parameter>    
+    <parameter name="TrackerHitCollection" type="string" lcioInType="TrackerHit"> </parameter>
     <!--verbosity level of this processor ("DEBUG0-4,MESSAGE0-4,WARNING0-4,ERROR0-4,SILENT")-->
     <!--parameter name="Verbosity" type="string">DEBUG </parameter-->
     <!--Name of the Vertex collection-->
-    <parameter name="VertexCollection" type="string" lcioInType="Vertex"> PrimaryVertices </parameter>
+    <parameter name="VertexCollection" type="string" lcioInType="Vertex"> </parameter>
     <!--Switch to write out collection parameters-->
     <parameter name="WriteCalorimeterHitCollectionParameters" type="bool">false </parameter>
     <!--Switch to write out collection parameters-->
@@ -264,7 +264,7 @@
     <!--Switch to write out collection parameters-->
     <parameter name="WriteIsoLepCollectionParameters" type="bool">false </parameter>
     <!--Switch to write out collection parameters-->
-    <parameter name="WriteJetCollectionParameters" type="bool">false </parameter>
+    <parameter name="WriteJetCollectionParameters" type="bool">true </parameter>
     <!--Switch to write out collection parameters-->
     <parameter name="WriteMCParticleCollectionParameters" type="bool">false </parameter>
     <!--Switch to write out collection parameters-->
@@ -272,14 +272,15 @@
     <!--Switch to write out collection parameters-->
     <parameter name="WriteSimCalorimeterHitCollectionParameters" type="bool">false </parameter>
     <!--Switch to write out collection parameters-->
-    <parameter name="WriteSimTrackerHitCollectionParameters" type="bool">false </parameter>
+    <parameter name="WriteSimTrackerHitCollectionParameters" type="bool">true </parameter>
     <!--Switch to write out collection parameters-->
-    <parameter name="WriteTrackCollectionParameters" type="bool">false </parameter>
+    <parameter name="WriteTrackCollectionParameters" type="bool">true </parameter>
     <!--Switch to write out collection parameters-->
-    <parameter name="WriteTrackerHitCollectionParameters" type="bool">false </parameter>
+    <parameter name="WriteTrackerHitCollectionParameters" type="bool">true </parameter>
     <!--Switch to write out collection parameters-->
     <parameter name="WriteVertexCollectionParameters" type="bool">false </parameter>
   </processor>
+
 
   <!-- ======================================================================================================== -->
   <!-- ======================================================================================================== -->
@@ -332,18 +333,25 @@
       <parameter name="BackgroundFileNames" type="StringVec"> /dev/null</parameter>
       <parameter name="NBunchtrain" type="int" value="0"/>
       <parameter name="NumberBackground" type="float" value="0."/>
+      <parameter name="MergeMCParticles" type="bool" value="false"/>
     </processor>
 
     <processor name="OverlayBIB" type="OverlayTimingGeneric">
       <parameter name="BackgroundFileNames" type="StringVec">
 	/data/samples/1p5TeV/bib/mod3_25ns_nEkin150MeV/sim_mumi-1e3x500-26m-lowth-excl_j1.slcio
 	/data/samples/1p5TeV/bib/mod3_25ns_nEkin150MeV/sim_mupl-1e3x500-26m-lowth-excl_j1.slcio
+	/data/samples/1p5TeV/bib/mod3_25ns_nEkin150MeV/sim_mumi-1e3x500-26m-lowth-excl_j2.slcio
+	/data/samples/1p5TeV/bib/mod3_25ns_nEkin150MeV/sim_mupl-1e3x500-26m-lowth-excl_j2.slcio
+	/data/samples/1p5TeV/bib/mod3_25ns_nEkin150MeV/sim_mumi-1e3x500-26m-lowth-excl_j3.slcio
+	/data/samples/1p5TeV/bib/mod3_25ns_nEkin150MeV/sim_mupl-1e3x500-26m-lowth-excl_j3.slcio
+	/data/samples/1p5TeV/bib/mod3_25ns_nEkin150MeV/sim_mumi-1e3x500-26m-lowth-excl_j4.slcio
+	/data/samples/1p5TeV/bib/mod3_25ns_nEkin150MeV/sim_mupl-1e3x500-26m-lowth-excl_j4.slcio
       </parameter>
       <parameter name="StartBackgroundFileIndex" type="int" value="0"/>
       <parameter name="AllowReusingBackgroundFiles" type="bool" value="false" />
       <parameter name="Verbosity" options="DEBUG0-4,MESSAGE0-4,WARNING0-4,ERROR0-4,SILENT">WARNING </parameter>
       <parameter name="NBunchtrain" type="int" value="1" />
-      <parameter name="NumberBackground" type="float" value="20" />
+      <parameter name="NumberBackground" type="float" value="0" />
     </processor>
 
   </group>
